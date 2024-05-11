@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class DashboardFrame extends JFrame {
     private JButton balanceButton;
@@ -11,48 +15,57 @@ public class DashboardFrame extends JFrame {
     private JButton withdrawButton;
     private JButton transferButton;
 
-    public DashboardFrame() {
+    private PrintWriter out;
+    private BufferedReader in;
+    private Socket socket;
+
+    public DashboardFrame(PrintWriter out, BufferedReader in, Socket socket) {
+        this.out = out;
+        this.in = in;
+        this.socket = socket;
+
         setTitle("Dashboard");
-        setSize(300, 200);
+        setSize(400, 150);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Center the frame on screen
+        setLocationRelativeTo(null);
 
         initComponents();
         addComponentsToFrame();
+
+        setVisible(true);
     }
 
     private void initComponents() {
         balanceButton = new JButton("Check Balance");
-        depositButton = new JButton("Deposit");
-        withdrawButton = new JButton("Withdraw");
-        transferButton = new JButton("Transfer");
+        depositButton = new JButton("Deposit Money");
+        withdrawButton = new JButton("Withdraw Money");
+        transferButton = new JButton("Transfer Money");
 
-        // Add action listeners to the buttons
         balanceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openBalanceFrame();
+                checkBalance();
             }
         });
 
         depositButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openDepositFrame();
+                depositMoney();
             }
         });
 
         withdrawButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openWithdrawalFrame();
+                withdrawMoney();
             }
         });
 
         transferButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openTransferFrame();
+                transferMoney();
             }
         });
     }
@@ -68,24 +81,23 @@ public class DashboardFrame extends JFrame {
         getContentPane().add(panel, BorderLayout.CENTER);
     }
 
-    private void openBalanceFrame() {
-        // Implement opening of BalanceFrame
-        // BalanceFrame balanceFrame = new BalanceFrame(balance);
-        // balanceFrame.setVisible(true);
+    private void checkBalance() {
+        // Send request to the server to check balance
+        out.println("BALANCE");
     }
 
-    private void openDepositFrame() {
-        DepositFrame depositFrame = new DepositFrame();
-        depositFrame.setVisible(true);
+    private void depositMoney() {
+        // Open DepositFrame
+        new DepositFrame(out, in);
     }
 
-    private void openWithdrawalFrame() {
-        WithdrawalFrame withdrawalFrame = new WithdrawalFrame();
-        withdrawalFrame.setVisible(true);
+    private void withdrawMoney() {
+        // Open WithdrawalFrame
+        new WithdrawalFrame(out, in);
     }
 
-    private void openTransferFrame() {
-        TransferFrame transferFrame = new TransferFrame();
-        transferFrame.setVisible(true);
+    private void transferMoney() {
+        // Open TransferFrame
+        new TransferFrame(out, in);
     }
 }

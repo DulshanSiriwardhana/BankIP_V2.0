@@ -4,13 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 
 public class DepositFrame extends JFrame {
     private JLabel amountLabel;
     private JTextField amountField;
     private JButton depositButton;
 
-    public DepositFrame() {
+    private PrintWriter out;
+    private BufferedReader in;
+
+    public DepositFrame(PrintWriter out, BufferedReader in) {
+        this.out = out;
+        this.in = in;
+
         setTitle("Deposit Money");
         setSize(300, 150);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -55,14 +63,16 @@ public class DepositFrame extends JFrame {
             return;
         }
 
-        // Send deposit request to the server
-        String depositRequest = "DEPOSIT:" + amount;
-        // Send depositRequest to the server using socket and receive the response
-        // Display the response or show appropriate message
-        // Example: out.println(depositRequest);
-        //          String response = in.readLine();
-        //          JOptionPane.showMessageDialog(this, response);
-        //          or
-        //          balanceLabel.setText("Balance: " + response);
+        try {
+            // Send deposit request to the server
+            out.println("DEPOSIT:" + amount);
+            // Receive the response from the server
+            String response = in.readLine();
+            // Display the response
+            JOptionPane.showMessageDialog(this, response);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error occurred while depositing money: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

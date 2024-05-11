@@ -19,12 +19,8 @@ public class Client {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
             // Initialize login frame
-            LoginFrame loginFrame = new LoginFrame(out, in);
+            LoginFrame loginFrame = new LoginFrame(out, in, socket); // Pass the socket to the LoginFrame
 
-            // Close resources
-            in.close();
-            out.close();
-            socket.close();
         } catch (IOException e) {
             System.err.println("Error connecting to server: " + e.getMessage());
         }
