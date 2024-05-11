@@ -10,9 +10,11 @@ public class ClientHandler implements Runnable {
     private Socket clientSocket;
     private BufferedReader in;
     private PrintWriter out;
+    private Database database;
 
-    public ClientHandler(Socket socket) {
+    public ClientHandler(Socket socket, Database database) {
         this.clientSocket = socket;
+        this.database = database; // Assign Database instance
     }
 
     @Override
@@ -45,11 +47,20 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // Method to process client request and generate response
     private String processRequest(String request) {
-        // Implement your logic for processing client requests here
-        // For example, you can parse the request, perform database operations, etc.
-        // This is just a placeholder method, replace it with your actual logic
-        return "Response to: " + request;
+        if (request.startsWith("LOGIN:")) {
+            String[] loginInfo = request.substring(6).split(":");
+            String accountNumber = loginInfo[0];
+            int pin = Integer.parseInt(loginInfo[1]);
+            if (database.validateAccount(accountNumber, pin)) {
+                double balance = database.getAccountBalance(accountNumber);
+                return "BALANCE:" + balance;
+            } else {
+                return "INVALID";
+            }
+        } else {
+            return "Unknown request"; // Add a default return value for other requests
+        }
     }
+
 }

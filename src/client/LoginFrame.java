@@ -5,7 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.Socket;
 
 public class LoginFrame extends JFrame {
     private JLabel accountNumberLabel;
@@ -17,15 +19,17 @@ public class LoginFrame extends JFrame {
     // Declare PrintWriter and BufferedReader as class members
     private PrintWriter out;
     private BufferedReader in;
+    private Socket socket;
 
-    // Constructor with PrintWriter and BufferedReader parameters
-    public LoginFrame(PrintWriter out, BufferedReader in) {
+    // Constructor with PrintWriter, BufferedReader, and Socket parameters
+    public LoginFrame(PrintWriter out, BufferedReader in, Socket socket) {
         // Call the default constructor of JFrame
         super("Login");
 
-        // Assign PrintWriter and BufferedReader to class members
+        // Assign PrintWriter, BufferedReader, and Socket to class members
         this.out = out;
         this.in = in;
+        this.socket = socket;
 
         // Set up the frame
         setSize(300, 150);
@@ -72,13 +76,31 @@ public class LoginFrame extends JFrame {
         String accountNumber = accountNumberField.getText();
         String pin = String.valueOf(pinField.getPassword());
 
-        // Validate account number and PIN (you may need to send them to the server for validation)
+        // Validate account number and PIN (you may need to send them to the server for
+        // validation)
         if (accountNumber.isEmpty() || pin.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Account number and PIN are required.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Account number and PIN are required.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         } else {
-            // If valid, close the login frame and open other frames
+            // If valid, close the login frame and open the dashboard
             dispose();
-            // Open other frames here (e.g., BalanceFrame, DepositFrame, WithdrawalFrame, TransferFrame)
+            openDashboard(); // Remove the parameter here
+        }
+    }
+
+    private void openDashboard() {
+        // Create a DashboardFrame passing PrintWriter, BufferedReader, and Socket
+        new DashboardFrame(out, in, socket);
+    }
+
+    // Method to close the resources
+    public void closeResources() {
+        try {
+            in.close();
+            out.close();
+            socket.close();
+        } catch (IOException e) {
+            System.err.println("Error closing resources: " + e.getMessage());
         }
     }
 }

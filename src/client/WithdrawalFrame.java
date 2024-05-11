@@ -4,13 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 
 public class WithdrawalFrame extends JFrame {
     private JLabel amountLabel;
     private JTextField amountField;
     private JButton withdrawButton;
 
-    public WithdrawalFrame() {
+    public WithdrawalFrame(PrintWriter out, BufferedReader in) {
         setTitle("Withdraw Money");
         setSize(300, 150);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -60,9 +62,9 @@ public class WithdrawalFrame extends JFrame {
         // Send withdrawalRequest to the server using socket and receive the response
         // Display the response or show appropriate message
         // Example: out.println(withdrawalRequest);
-        //          String response = in.readLine();
-        //          JOptionPane.showMessageDialog(this, response);
-        //          or
-        //          balanceLabel.setText("Balance: " + response);
+        // String response = in.readLine();
+        // JOptionPane.showMessageDialog(this, response);
+        // or
+        // balanceLabel.setText("Balance: " + response);
     }
 }

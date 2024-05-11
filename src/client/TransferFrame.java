@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 
 public class TransferFrame extends JFrame {
     private JLabel recipientLabel;
@@ -12,7 +14,7 @@ public class TransferFrame extends JFrame {
     private JTextField amountField;
     private JButton transferButton;
 
-    public TransferFrame() {
+    public TransferFrame(PrintWriter out, BufferedReader in) {
         setTitle("Transfer Money");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -59,7 +61,8 @@ public class TransferFrame extends JFrame {
 
         // Validate recipient account number
         if (recipientAccountNumber.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Recipient account number is required.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Recipient account number is required.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -74,9 +77,9 @@ public class TransferFrame extends JFrame {
         // Send transferRequest to the server using socket and receive the response
         // Display the response or show appropriate message
         // Example: out.println(transferRequest);
-        //          String response = in.readLine();
-        //          JOptionPane.showMessageDialog(this, response);
-        //          or
-        //          balanceLabel.setText("Balance: " + response);
+        // String response = in.readLine();
+        // JOptionPane.showMessageDialog(this, response);
+        // or
+        // balanceLabel.setText("Balance: " + response);
     }
 }
