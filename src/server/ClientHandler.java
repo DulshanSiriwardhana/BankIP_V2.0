@@ -52,11 +52,14 @@ public class ClientHandler implements Runnable {
             String[] loginInfo = request.substring(6).split(":");
             String accountNumber = loginInfo[0];
             int pin = Integer.parseInt(loginInfo[1]);
+            System.out.println(accountNumber);
+            System.out.println(pin);
             if (database.validateAccount(accountNumber, pin)) {
                 double balance = database.getAccountBalance(accountNumber);
-                return "BALANCE:" + balance;
+                System.out.println(accountNumber);
+                return "LOGIN_SUCCESS:" + balance; // Send success response
             } else {
-                return "INVALID";
+                return "LOGIN_FAILED"; // Send failure response
             }
         } else {
             return "Unknown request"; // Add a default return value for other requests

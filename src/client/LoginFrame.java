@@ -76,15 +76,32 @@ public class LoginFrame extends JFrame {
         String accountNumber = accountNumberField.getText();
         String pin = String.valueOf(pinField.getPassword());
 
-        // Validate account number and PIN (you may need to send them to the server for
-        // validation)
+        // Validate account number and PIN (you may need to send them to the server for validation)
         if (accountNumber.isEmpty() || pin.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Account number and PIN are required.", "Error",
                     JOptionPane.ERROR_MESSAGE);
         } else {
-            // If valid, close the login frame and open the dashboard
-            dispose();
-            openDashboard(); // Remove the parameter here
+            // Send the login request to the server
+            out.println("LOGIN:" + accountNumber + ":" + pin);
+            try {
+                // Wait for response from the server
+                String response = in.readLine();
+                System.out.println(response);
+                if (response.startsWith("LOGIN_SUCCESS:")) {
+                    //double balance = Double.parseDouble(response.substring(14));
+                    // If login is successful, open the dashboard
+                    dispose(); // Close the login frame
+                    openDashboard(); // Pass the balance to the dashboard
+                } else if (response.equals("LOGIN_FAILED")) {
+                    JOptionPane.showMessageDialog(this, "Invalid account number or PIN.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Unknown response from server.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (IOException e) {
+                e.printStackTrace(); // Handle communication error
+            }
         }
     }
 
