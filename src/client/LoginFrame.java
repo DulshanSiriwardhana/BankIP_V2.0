@@ -72,13 +72,20 @@ public class LoginFrame extends JFrame {
         String accountNumber = accountNumberField.getText();
         String pin = String.valueOf(pinField.getPassword());
 
-        // Validate account number and PIN (you may need to send them to the server for validation)
+        // Validate account number and PIN (you may need to send them to the server for
+        // validation)
         if (accountNumber.isEmpty() || pin.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Account number and PIN are required.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Account number and PIN are required.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         } else {
-            // If valid, close the login frame and open other frames
+            // If valid, close the login frame and open the dashboard
             dispose();
-            // Open other frames here (e.g., BalanceFrame, DepositFrame, WithdrawalFrame, TransferFrame)
+            openDashboard();
         }
+    }
+
+    private void openDashboard() {
+        DashboardFrame dashboard = new DashboardFrame();
+        dashboard.setVisible(true);
     }
 }
