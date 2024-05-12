@@ -87,7 +87,7 @@ public class LoginFrame extends JFrame {
                 // Wait for response from the server
                 String response = in.readLine();
                 System.out.println(response);
-                if (response.startsWith("LOGIN_SUCCESS:")) {
+                if (response.startsWith("LOGIN_SUCCESS")) {
                     //double balance = Double.parseDouble(response.substring(14));
                     // If login is successful, open the dashboard
                     dispose(); // Close the login frame

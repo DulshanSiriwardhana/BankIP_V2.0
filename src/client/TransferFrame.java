@@ -14,7 +14,13 @@ public class TransferFrame extends JFrame {
     private JTextField amountField;
     private JButton transferButton;
 
+    private PrintWriter out;
+    private BufferedReader in;
+
     public TransferFrame(PrintWriter out, BufferedReader in) {
+        this.out = out;
+        this.in = in;
+
         setTitle("Transfer Money");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -57,7 +63,13 @@ public class TransferFrame extends JFrame {
     private void transferMoney() {
         // Get recipient account number and amount from text fields
         String recipientAccountNumber = recipientField.getText();
-        double amount = Double.parseDouble(amountField.getText());
+        double amount;
+        try {
+            amount = Double.parseDouble(amountField.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid transfer amount.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Validate recipient account number
         if (recipientAccountNumber.isEmpty()) {
@@ -72,14 +84,16 @@ public class TransferFrame extends JFrame {
             return;
         }
 
-        // Send transfer request to the server
-        String transferRequest = "TRANSFER:" + recipientAccountNumber + ":" + amount;
-        // Send transferRequest to the server using socket and receive the response
-        // Display the response or show appropriate message
-        // Example: out.println(transferRequest);
-        // String response = in.readLine();
-        // JOptionPane.showMessageDialog(this, response);
-        // or
-        // balanceLabel.setText("Balance: " + response);
+        try {
+            // Send transfer request to the server
+            out.println("TRANSFER:" + recipientAccountNumber + ":" + amount);
+            // Receive the response from the server
+            String response = in.readLine();
+            // Display the response or show appropriate message
+            JOptionPane.showMessageDialog(this, response);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error occurred during money transfer: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

@@ -49,21 +49,75 @@ public class ClientHandler implements Runnable {
 
     private String processRequest(String request) {
         if (request.startsWith("LOGIN:")) {
+            // Handle login request
             String[] loginInfo = request.substring(6).split(":");
             String accountNumber = loginInfo[0];
             int pin = Integer.parseInt(loginInfo[1]);
             System.out.println(accountNumber);
             System.out.println(pin);
             if (database.validateAccount(accountNumber, pin)) {
-                double balance = database.getAccountBalance(accountNumber);
-                System.out.println(accountNumber);
-                return "LOGIN_SUCCESS:" + balance; // Send success response
+                return "LOGIN_SUCCESS"; // Send success response without balance
             } else {
                 return "LOGIN_FAILED"; // Send failure response
             }
+        } else if (request.startsWith("BALANCE")) {
+            // Handle balance inquiry request
+            // Extract account number from request
+            String accountNumber = null;
+            if (request.length() > 7) {
+                accountNumber = request.substring(8);
+            }
+            // Retrieve balance from the database
+            double balance = database.getAccountBalance(accountNumber);
+            // Send balance as response
+            return "BALANCE:" + String.valueOf(balance);
+        } else if (request.startsWith("DEPOSIT:")) {
+            // Handle deposit request
+            // Extract account number and amount from request
+            String[] depositInfo = request.substring(8).split(":");
+            if(depositInfo.length < 2) return "INVALID_DEPOSIT_REQUEST";
+            String accountNumber = depositInfo[0];
+            double amount = Double.parseDouble(depositInfo[1]);
+            // Perform deposit operation in the database
+            database.deposit(accountNumber, amount);
+            // Send success response
+            return "DEPOSIT_SUCCESS";
+        } else if (request.startsWith("WITHDRAW:")) {
+            // Handle withdrawal request
+            // Extract account number and amount from request
+            String[] withdrawInfo = request.substring(9).split(":");
+            if(withdrawInfo.length < 2) return "INVALID_WITHDRAWAL_REQUEST";
+            String accountNumber = withdrawInfo[0];
+            double amount = Double.parseDouble(withdrawInfo[1]);
+            // Perform withdrawal operation in the database
+            boolean success = database.withdraw(accountNumber, amount);
+            // Send success or failure response
+            if (success) {
+                return "WITHDRAW_SUCCESS";
+            } else {
+                return "INSUFFICIENT_FUNDS";
+            }
+        } else if (request.startsWith("TRANSFER:")) {
+            // Handle transfer request
+            // Extract sender account number, recipient account number, and amount from request
+            String[] transferInfo = request.substring(9).split(":");
+            if(transferInfo.length < 3) return "INVALID_TRANSFER_REQUEST";
+            String senderAccountNumber = transferInfo[0];
+            String recipientAccountNumber = transferInfo[1];
+            double amount = Double.parseDouble(transferInfo[2]);
+            // Perform transfer operation in the database
+            boolean success = database.transfer(senderAccountNumber, recipientAccountNumber, amount);
+            // Send success or failure response
+            if (success) {
+                return "TRANSFER_SUCCESS";
+            } else {
+                return "TRANSFER_FAILED";
+            }
         } else {
-            return "Unknown request"; // Add a default return value for other requests
+            // Handle unknown request
+            return "Unknown request";
         }
     }
 
 }
+

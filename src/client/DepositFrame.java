@@ -14,10 +14,12 @@ public class DepositFrame extends JFrame {
 
     private PrintWriter out;
     private BufferedReader in;
+    private BalanceFrame balanceFrame;
 
-    public DepositFrame(PrintWriter out, BufferedReader in) {
+    public DepositFrame(PrintWriter out, BufferedReader in, BalanceFrame balanceFrame) {
         this.out = out;
         this.in = in;
+        this.balanceFrame = balanceFrame;
 
         setTitle("Deposit Money");
         setSize(300, 150);
@@ -55,7 +57,13 @@ public class DepositFrame extends JFrame {
 
     private void depositMoney() {
         // Get deposit amount from text field
-        double amount = Double.parseDouble(amountField.getText());
+        double amount;
+        try {
+            amount = Double.parseDouble(amountField.getText());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid deposit amount.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Validate deposit amount
         if (amount <= 0) {
@@ -68,8 +76,18 @@ public class DepositFrame extends JFrame {
             out.println("DEPOSIT:" + amount);
             // Receive the response from the server
             String response = in.readLine();
-            // Display the response
-            JOptionPane.showMessageDialog(this, response);
+            // If the deposit is successful, update the balance in BalanceFrame
+            if (response.startsWith("DEPOSIT_SUCCESS")) {
+                // Extract the new balance from the response
+                double newBalance = Double.parseDouble(response.substring(15));
+                // Update the balance in BalanceFrame
+                balanceFrame.updateBalance(newBalance);
+                // Display success message
+                JOptionPane.showMessageDialog(this, "Deposit successful. New balance: " + newBalance);
+            } else {
+                // Display error message received from the server
+                JOptionPane.showMessageDialog(this, response, "Error", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error occurred while depositing money: " + e.getMessage(), "Error",
                     JOptionPane.ERROR_MESSAGE);

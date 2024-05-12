@@ -12,7 +12,13 @@ public class WithdrawalFrame extends JFrame {
     private JTextField amountField;
     private JButton withdrawButton;
 
+    private PrintWriter out;
+    private BufferedReader in;
+
     public WithdrawalFrame(PrintWriter out, BufferedReader in) {
+        this.out = out;
+        this.in = in;
+
         setTitle("Withdraw Money");
         setSize(300, 150);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -49,7 +55,13 @@ public class WithdrawalFrame extends JFrame {
 
     private void withdrawMoney() {
         // Get withdrawal amount from text field
-        double amount = Double.parseDouble(amountField.getText());
+        double amount;
+        try {
+            amount = Double.parseDouble(amountField.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid withdrawal amount.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Validate withdrawal amount
         if (amount <= 0) {
@@ -57,14 +69,16 @@ public class WithdrawalFrame extends JFrame {
             return;
         }
 
-        // Send withdrawal request to the server
-        String withdrawalRequest = "WITHDRAW:" + amount;
-        // Send withdrawalRequest to the server using socket and receive the response
-        // Display the response or show appropriate message
-        // Example: out.println(withdrawalRequest);
-        // String response = in.readLine();
-        // JOptionPane.showMessageDialog(this, response);
-        // or
-        // balanceLabel.setText("Balance: " + response);
+        try {
+            // Send withdrawal request to the server
+            out.println("WITHDRAW:" + amount);
+            // Receive the response from the server
+            String response = in.readLine();
+            // Display the response or show appropriate message
+            JOptionPane.showMessageDialog(this, response);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error occurred during withdrawal: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
