@@ -44,7 +44,7 @@ public class LoginFrame extends JFrame {
     }
 
     private void initComponents() {
-        titleLabel = new JLabel("Grameeya Bankuwa");
+        titleLabel = new JLabel("Cooperative Bank");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
 
