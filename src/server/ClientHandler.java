@@ -11,6 +11,7 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private Database database;
+    private Integer loggedInAccountNumber; // Variable to store the logged-in account number
 
     public ClientHandler(Socket socket, Database database) {
         this.clientSocket = socket;
@@ -48,14 +49,14 @@ public class ClientHandler implements Runnable {
     }
 
     private String processRequest(String request) {
+        System.out.println(request);
         if (request.startsWith("LOGIN:")) {
             // Handle login request
             String[] loginInfo = request.substring(6).split(":");
             String accountNumber = loginInfo[0];
             int pin = Integer.parseInt(loginInfo[1]);
-            System.out.println(accountNumber);
-            System.out.println(pin);
             if (database.validateAccount(accountNumber, pin)) {
+                setLoggedInAccountNumber(Integer.parseInt(accountNumber));
                 return "LOGIN_SUCCESS"; // Send success response without balance
             } else {
                 return "LOGIN_FAILED"; // Send failure response
@@ -74,9 +75,11 @@ public class ClientHandler implements Runnable {
         } else if (request.startsWith("DEPOSIT:")) {
             // Handle deposit request
             // Extract account number and amount from request
-            String[] depositInfo = request.substring(8).split(":");
-            if(depositInfo.length < 2) return "INVALID_DEPOSIT_REQUEST";
-            String accountNumber = depositInfo[0];
+            String[] depositInfo = request.split(":");
+            System.out.println(depositInfo[0]);
+            System.out.println(depositInfo[1]);
+            if (depositInfo.length < 2) return "INVALID_DEPOSIT_REQUEST";
+            String accountNumber = String.valueOf(this.loggedInAccountNumber);
             double amount = Double.parseDouble(depositInfo[1]);
             // Perform deposit operation in the database
             database.deposit(accountNumber, amount);
@@ -86,7 +89,7 @@ public class ClientHandler implements Runnable {
             // Handle withdrawal request
             // Extract account number and amount from request
             String[] withdrawInfo = request.substring(9).split(":");
-            if(withdrawInfo.length < 2) return "INVALID_WITHDRAWAL_REQUEST";
+            if (withdrawInfo.length < 2) return "INVALID_WITHDRAWAL_REQUEST";
             String accountNumber = withdrawInfo[0];
             double amount = Double.parseDouble(withdrawInfo[1]);
             // Perform withdrawal operation in the database
@@ -101,7 +104,7 @@ public class ClientHandler implements Runnable {
             // Handle transfer request
             // Extract sender account number, recipient account number, and amount from request
             String[] transferInfo = request.substring(9).split(":");
-            if(transferInfo.length < 3) return "INVALID_TRANSFER_REQUEST";
+            if (transferInfo.length < 3) return "INVALID_TRANSFER_REQUEST";
             String senderAccountNumber = transferInfo[0];
             String recipientAccountNumber = transferInfo[1];
             double amount = Double.parseDouble(transferInfo[2]);
@@ -119,5 +122,13 @@ public class ClientHandler implements Runnable {
         }
     }
 
-}
+    // Method to set the logged-in account number
+    public void setLoggedInAccountNumber(Integer accountNumber) {
+        this.loggedInAccountNumber = accountNumber;
+    }
 
+    // Method to get the logged-in account number
+    public Integer getLoggedInAccountNumber() {
+        return loggedInAccountNumber;
+    }
+}
