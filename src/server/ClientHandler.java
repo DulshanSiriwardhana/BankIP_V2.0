@@ -64,7 +64,7 @@ public class ClientHandler implements Runnable {
         } else if (request.startsWith("BALANCE")) {
             // Handle balance inquiry request
             // Extract account number from request
-            String accountNumber = null;
+            String accountNumber = String.valueOf(this.loggedInAccountNumber);;
             if (request.length() > 7) {
                 accountNumber = request.substring(8);
             }
@@ -88,9 +88,9 @@ public class ClientHandler implements Runnable {
         } else if (request.startsWith("WITHDRAW:")) {
             // Handle withdrawal request
             // Extract account number and amount from request
-            String[] withdrawInfo = request.substring(9).split(":");
+            String[] withdrawInfo = request.split(":");
             if (withdrawInfo.length < 2) return "INVALID_WITHDRAWAL_REQUEST";
-            String accountNumber = withdrawInfo[0];
+            String accountNumber = String.valueOf(this.loggedInAccountNumber);
             double amount = Double.parseDouble(withdrawInfo[1]);
             // Perform withdrawal operation in the database
             boolean success = database.withdraw(accountNumber, amount);
@@ -103,9 +103,9 @@ public class ClientHandler implements Runnable {
         } else if (request.startsWith("TRANSFER:")) {
             // Handle transfer request
             // Extract sender account number, recipient account number, and amount from request
-            String[] transferInfo = request.substring(9).split(":");
-            if (transferInfo.length < 3) return "INVALID_TRANSFER_REQUEST";
-            String senderAccountNumber = transferInfo[0];
+            String[] transferInfo = request.split(":");
+            if (transferInfo.length < 2) return "INVALID_TRANSFER_REQUEST";
+            String senderAccountNumber = String.valueOf(this.loggedInAccountNumber);
             String recipientAccountNumber = transferInfo[1];
             double amount = Double.parseDouble(transferInfo[2]);
             // Perform transfer operation in the database
