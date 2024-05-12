@@ -30,7 +30,7 @@ public class DashboardFrame extends JFrame {
         this.socket = socket;
 
         setTitle("Dashboard");
-        setSize(400, 300);
+        setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -41,60 +41,75 @@ public class DashboardFrame extends JFrame {
     }
 
     private void initComponents() {
-        balanceButton = new JButton("Check Balance");
-        depositButton = new JButton("Deposit Money");
-        withdrawButton = new JButton("Withdraw Money");
-        transferButton = new JButton("Transfer Money");
+        // Buttons with custom styles
+        balanceButton = createStyledButton("Check Balance");
+        depositButton = createStyledButton("Deposit Money");
+        withdrawButton = createStyledButton("Withdraw Money");
+        transferButton = createStyledButton("Transfer Money");
 
-        balanceButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                checkBalance();
-            }
-        });
+        // Text fields with custom styles
+        amountField = createStyledTextField(10);
+        recipientField = createStyledTextField(10);
 
-        depositButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                depositMoney();
-            }
-        });
-
-        withdrawButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                withdrawMoney();
-            }
-        });
-
-        transferButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                transferMoney();
-            }
-        });
-
-        amountField = new JTextField(10);
-        recipientField = new JTextField(10);
+        // Text area for logs
         logTextArea = new JTextArea(10, 30);
         logTextArea.setEditable(false);
+        logTextArea.setLineWrap(true);
+        styleTextArea(logTextArea);
+
+        // Add action listeners to buttons
+        balanceButton.addActionListener(e -> checkBalance());
+        depositButton.addActionListener(e -> depositMoney());
+        withdrawButton.addActionListener(e -> withdrawMoney());
+        transferButton.addActionListener(e -> transferMoney());
+    }
+
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setBackground(new Color(0, 102, 204)); // Set background color
+        button.setForeground(Color.WHITE); // Set text color
+        button.setFocusPainted(false); // Remove the focus border
+        button.setFont(new Font("Arial", Font.BOLD, 16)); // Set font size and style
+        return button;
+    }
+
+    private JTextField createStyledTextField(int columns) {
+        JTextField textField = new JTextField(columns);
+        textField.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font size and style
+        return textField;
+    }
+
+    private void styleTextArea(JTextArea textArea) {
+        textArea.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font size and style
     }
 
     private void addComponentsToFrame() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(6, 1));
+        panel.setLayout(new GridLayout(6, 1, 10, 10)); // Add spacing between components
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding around the panel
+
+        // Add buttons
         panel.add(balanceButton);
         panel.add(depositButton);
         panel.add(withdrawButton);
         panel.add(transferButton);
-        panel.add(new JLabel("Amount:"));
+
+        // Add labels and text fields
+        panel.add(createLabel("Amount:"));
         panel.add(amountField);
-        panel.add(new JLabel("Recipient Account Number:"));
+        panel.add(createLabel("Recipient Account Number:"));
         panel.add(recipientField);
 
+        // Add the log text area to a scroll pane
         JScrollPane scrollPane = new JScrollPane(logTextArea);
         getContentPane().add(panel, BorderLayout.NORTH);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font size and style
+        return label;
     }
 
     private void checkBalance() {
@@ -164,5 +179,16 @@ public class DashboardFrame extends JFrame {
         } catch (IOException e) {
             logTextArea.append("Error occurred while transferring money: " + e.getMessage() + "\n");
         }
+    }
+
+    public static void main(String[] args) {
+        // For testing purposes
+        SwingUtilities.invokeLater(() -> {
+            PrintWriter out = null;
+            BufferedReader in = null;
+            Socket socket = null;
+
+            new DashboardFrame(out, in, socket);
+        });
     }
 }

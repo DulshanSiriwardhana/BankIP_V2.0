@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class LoginFrame extends JFrame {
+    private JLabel titleLabel;
     private JLabel accountNumberLabel;
     private JLabel pinLabel;
     private JTextField accountNumberField;
@@ -24,7 +25,7 @@ public class LoginFrame extends JFrame {
     // Constructor with PrintWriter, BufferedReader, and Socket parameters
     public LoginFrame(PrintWriter out, BufferedReader in, Socket socket) {
         // Call the default constructor of JFrame
-        super("Login");
+        super("Banking App - Login");
 
         // Assign PrintWriter, BufferedReader, and Socket to class members
         this.out = out;
@@ -32,7 +33,7 @@ public class LoginFrame extends JFrame {
         this.socket = socket;
 
         // Set up the frame
-        setSize(300, 150);
+        setSize(450, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Center the frame on screen
 
@@ -43,6 +44,10 @@ public class LoginFrame extends JFrame {
     }
 
     private void initComponents() {
+        titleLabel = new JLabel("Grameeya Bankuwa");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+
         accountNumberLabel = new JLabel("Account Number:");
         accountNumberField = new JTextField(20);
 
@@ -60,12 +65,15 @@ public class LoginFrame extends JFrame {
 
     private void addComponentsToFrame() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2));
+        panel.setLayout(new GridLayout(4, 2, 5, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.add(titleLabel);
+        panel.add(new JLabel()); // Empty label for spacing
         panel.add(accountNumberLabel);
         panel.add(accountNumberField);
         panel.add(pinLabel);
         panel.add(pinField);
-        panel.add(new JLabel()); // Empty space for layout
+        panel.add(new JLabel()); // Empty label for spacing
         panel.add(loginButton);
 
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -76,7 +84,8 @@ public class LoginFrame extends JFrame {
         String accountNumber = accountNumberField.getText();
         String pin = String.valueOf(pinField.getPassword());
 
-        // Validate account number and PIN (you may need to send them to the server for validation)
+        // Validate account number and PIN (you may need to send them to the server for
+        // validation)
         if (accountNumber.isEmpty() || pin.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Account number and PIN are required.", "Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -88,7 +97,7 @@ public class LoginFrame extends JFrame {
                 String response = in.readLine();
                 System.out.println(response);
                 if (response.startsWith("LOGIN_SUCCESS")) {
-                    //double balance = Double.parseDouble(response.substring(14));
+                    // double balance = Double.parseDouble(response.substring(14));
                     // If login is successful, open the dashboard
                     dispose(); // Close the login frame
                     openDashboard(); // Pass the balance to the dashboard
