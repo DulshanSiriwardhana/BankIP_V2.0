@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class Client {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 12345;
+    private static final int SERVER_PORT = 12347;
 
     public static void main(String[] args) {
         try {
@@ -18,9 +18,7 @@ public class Client {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            // Initialize login frame
-            LoginFrame loginFrame = new LoginFrame(out, in, socket); // Pass the socket to the LoginFrame
-
+            LoginFrame loginFrame = new LoginFrame(out, in, socket); // Initialize login frame
         } catch (IOException e) {
             System.err.println("Error connecting to server: " + e.getMessage());
         }

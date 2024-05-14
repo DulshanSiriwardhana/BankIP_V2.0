@@ -10,123 +10,130 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class LoginFrame extends JFrame {
-    private JLabel titleLabel;
-    private JLabel accountNumberLabel;
-    private JLabel pinLabel;
-    private JTextField accountNumberField;
-    private JPasswordField pinField;
-    private JButton loginButton;
-
-    // Declare PrintWriter and BufferedReader as class members
     private PrintWriter out;
     private BufferedReader in;
     private Socket socket;
 
-    // Constructor with PrintWriter, BufferedReader, and Socket parameters
     public LoginFrame(PrintWriter out, BufferedReader in, Socket socket) {
-        // Call the default constructor of JFrame
-        super("Banking App - Login");
-
-        // Assign PrintWriter, BufferedReader, and Socket to class members
         this.out = out;
         this.in = in;
         this.socket = socket;
+        initializeUI();
+    }
 
-        // Set up the frame
-        setSize(450, 200);
+    private void initializeUI() {
+        setTitle("Login");
+        setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Center the frame on screen
+        setLocationRelativeTo(null); // Center the frame
 
-        initComponents();
-        addComponentsToFrame();
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(60, 63, 65));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        JLabel titleLabel = new JLabel("Welcome to the Bank");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setForeground(Color.WHITE);
+
+        JLabel accountLabel = new JLabel("Account Number:");
+        accountLabel.setForeground(Color.WHITE);
+        JTextField accountField = new JTextField(15);
+
+        JLabel pinLabel = new JLabel("PIN:");
+        pinLabel.setForeground(Color.WHITE);
+        JPasswordField pinField = new JPasswordField(15);
+
+        JButton loginButton = new JButton("Login");
+        loginButton.setBackground(new Color(51, 153, 255));
+        loginButton.setForeground(Color.WHITE);
+
+        JButton createAccountButton = new JButton("Create Account");
+        createAccountButton.setBackground(new Color(51, 204, 51));
+        createAccountButton.setForeground(Color.WHITE);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(titleLabel, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(accountLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        panel.add(accountField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(pinLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        panel.add(pinField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        panel.add(loginButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(createAccountButton, gbc);
+
+        add(panel);
+
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accountNumber = accountField.getText();
+                String pin = new String(pinField.getPassword());
+                out.println("LOGIN:" + accountNumber + ":" + pin);
+                try {
+                    String response = in.readLine();
+                    if (response.equals("LOGIN_SUCCESS")) {
+                        JOptionPane.showMessageDialog(LoginFrame.this, "Login successful!");
+                        openDashboard();
+                    } else {
+                        JOptionPane.showMessageDialog(LoginFrame.this, "Login failed!");
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(LoginFrame.this, "Error: " + ex.getMessage());
+                }
+            }
+        });
+
+        createAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accountNumber = accountField.getText();
+                String pin = new String(pinField.getPassword());
+                String initialBalance = JOptionPane.showInputDialog("Enter initial balance:");
+                out.println("CREATE_ACCOUNT:" + accountNumber + ":" + pin + ":" + initialBalance);
+                try {
+                    String response = in.readLine();
+                    if (response.equals("CREATE_ACCOUNT_SUCCESS")) {
+                        JOptionPane.showMessageDialog(LoginFrame.this, "Account created successfully!");
+                    } else {
+                        JOptionPane.showMessageDialog(LoginFrame.this, "Account creation failed!");
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(LoginFrame.this, "Error: " + ex.getMessage());
+                }
+            }
+        });
 
         setVisible(true);
     }
 
-    private void initComponents() {
-        titleLabel = new JLabel("Grameeya Bankuwa");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLabel.setHorizontalAlignment(JLabel.CENTER);
-
-        accountNumberLabel = new JLabel("Account Number:");
-        accountNumberField = new JTextField(20);
-
-        pinLabel = new JLabel("PIN:");
-        pinField = new JPasswordField(10);
-
-        loginButton = new JButton("Login");
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                login();
-            }
-        });
-    }
-
-    private void addComponentsToFrame() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 2, 5, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        panel.add(titleLabel);
-        panel.add(new JLabel()); // Empty label for spacing
-        panel.add(accountNumberLabel);
-        panel.add(accountNumberField);
-        panel.add(pinLabel);
-        panel.add(pinField);
-        panel.add(new JLabel()); // Empty label for spacing
-        panel.add(loginButton);
-
-        getContentPane().add(panel, BorderLayout.CENTER);
-    }
-
-    private void login() {
-        // Get account number and PIN from text fields
-        String accountNumber = accountNumberField.getText();
-        String pin = String.valueOf(pinField.getPassword());
-
-        // Validate account number and PIN (you may need to send them to the server for
-        // validation)
-        if (accountNumber.isEmpty() || pin.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Account number and PIN are required.", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        } else {
-            // Send the login request to the server
-            out.println("LOGIN:" + accountNumber + ":" + pin);
-            try {
-                // Wait for response from the server
-                String response = in.readLine();
-                System.out.println(response);
-                if (response.startsWith("LOGIN_SUCCESS")) {
-                    // double balance = Double.parseDouble(response.substring(14));
-                    // If login is successful, open the dashboard
-                    dispose(); // Close the login frame
-                    openDashboard(); // Pass the balance to the dashboard
-                } else if (response.equals("LOGIN_FAILED")) {
-                    JOptionPane.showMessageDialog(this, "Invalid account number or PIN.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Unknown response from server.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (IOException e) {
-                e.printStackTrace(); // Handle communication error
-            }
-        }
-    }
-
     private void openDashboard() {
-        // Create a DashboardFrame passing PrintWriter, BufferedReader, and Socket
-        new DashboardFrame(out, in, socket);
-    }
+        // Hide the current frame
+        this.setVisible(false);
 
-    // Method to close the resources
-    public void closeResources() {
-        try {
-            in.close();
-            out.close();
-            socket.close();
-        } catch (IOException e) {
-            System.err.println("Error closing resources: " + e.getMessage());
-        }
+        // Open the dashboard frame
+        new DashboardFrame(out, in, socket);
     }
 }

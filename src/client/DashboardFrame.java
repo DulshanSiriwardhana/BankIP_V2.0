@@ -3,7 +3,6 @@ package client;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -81,18 +80,25 @@ public class DashboardFrame extends JFrame {
 
     private void styleTextArea(JTextArea textArea) {
         textArea.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font size and style
+        textArea.setBackground(new Color(240, 240, 240)); // Light background for better readability
+        textArea.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200))); // Light border for a neat look
     }
 
     private void addComponentsToFrame() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(6, 1, 10, 10)); // Add spacing between components
+        panel.setLayout(new GridLayout(6, 2, 10, 10)); // Add spacing between components
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding around the panel
+        panel.setBackground(new Color(60, 63, 65));
 
         // Add buttons
         panel.add(balanceButton);
+        panel.add(new JLabel()); // Empty label for alignment
         panel.add(depositButton);
+        panel.add(new JLabel()); // Empty label for alignment
         panel.add(withdrawButton);
+        panel.add(new JLabel()); // Empty label for alignment
         panel.add(transferButton);
+        panel.add(new JLabel()); // Empty label for alignment
 
         // Add labels and text fields
         panel.add(createLabel("Amount:"));
@@ -102,6 +108,8 @@ public class DashboardFrame extends JFrame {
 
         // Add the log text area to a scroll pane
         JScrollPane scrollPane = new JScrollPane(logTextArea);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding around the scroll pane
+
         getContentPane().add(panel, BorderLayout.NORTH);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
     }
@@ -109,6 +117,7 @@ public class DashboardFrame extends JFrame {
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font size and style
+        label.setForeground(Color.WHITE);
         return label;
     }
 
